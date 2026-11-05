@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rohan Pradhan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { cursor: none; }
+    body {
+      background: #08090A;
+      color: #E4E4E7;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      overflow-x: hidden;
+    }
+    ::selection {
+      background: rgba(99, 102, 241, 0.25);
+      color: #fff;
+    }
+
+    /* ── Custom Cursor ── */
+    #cursor {
+      position: fixed; top: 0; left: 0;
+      width: 16px; height: 16px;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      transform: translate(-50%, -50%);
+    }
+    #cursor.hovering {
+      width: 48px; height: 48px;
+      border-color: rgba(99, 102, 241, 0.6);
+      background: rgba(99, 102, 241, 0.06);
+    }
+    #cursor-glow {
+      position: fixed; top: 0; left: 0;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s ease;
+    }
+
+    /* ── Dot Grid Background ── */
+    .dot-grid {
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* ── Reveal Animations ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Stagger children ── */
+    .stagger > .reveal:nth-child(1) { transition-delay: 0ms; }
+    .stagger > .reveal:nth-child(2) { transition-delay: 80ms; }
+    .stagger > .reveal:nth-child(3) { transition-delay: 160ms; }
+    .stagger > .reveal:nth-child(4) { transition-delay: 240ms; }
+    .stagger > .reveal:nth-child(5) { transition-delay: 320ms; }
+
+    /* ── Project Row Hover ── */
+    .project-row {
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .project-row::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 12px;
+      opacity: 0;
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(168,85,247,0.04), transparent);
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+    .project-row:hover::before {
+      opacity: 1;
+    }
+    .project-row:hover {
+      padding-left: 1.25rem;
+    }
+    .project-row .arrow-icon {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+    }
+    .project-row:hover .arrow-icon {
+      opacity: 1;
+      transform: translate(2px, -2px);
+    }
+
+    /* ── Name scramble effect ── */
+    .char {
+      display: inline-block;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    /* ── Glowing status dot ── */
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 4px 1px rgba(52, 211, 153, 0.4); }
+      50% { box-shadow: 0 0 10px 3px rgba(52, 211, 153, 0.7); }
+    }
+    .glow-dot {
+      animation: glow-pulse 2.5s ease-in-out infinite;
+    }
+
+    /* ── Horizontal rule shimmer ── */
+    .shimmer-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 4s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Metric counter ── */
+    .metric-value {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Email button ── */
+    .email-btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .email-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    .email-btn:hover::after {
+      transform: translateX(100%);
+    }
+
+    /* ── Tech tag ── */
+    .tech-tag {
+      transition: all 0.2s ease;
+    }
+    .project-row:hover .tech-tag {
+      color: rgba(165, 180, 252, 0.8);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+  </style>
+</head>
+<body class="dot-grid min-h-screen">
+
+  <!-- Custom Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-glow"></div>
+
+  <div class="max-w-2xl mx-auto px-6 py-28 sm:py-36 space-y-32">
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- 1. HERO                             -->
+    <!-- ═══════════════════════════════════ -->
+    <header class="space-y-8 stagger">
+
+      <!-- Availability -->
+      <div class="reveal">
+        <span class="inline-flex items-center gap-2 text-xs font-mono text-zinc-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 glow-dot"></span>
+          Available for Summer 2026
+        </span>
+      </div>
+
+      <!-- Name with scramble -->
+      <div class="reveal">
+        <h1 id="scramble-name"
+            class="text-4xl sm:text-5xl font-semibold tracking-tight text-white leading-[1.1]"
+            data-value="Rohan Pradhan">
+          Rohan Pradhan
+        </h1>
+      </div>
+
+      <!-- One-liner -->
+      <div class="reveal">
+        <p class="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-lg">
+          I build deterministic developer tools, serverless research radars, and campus marketplaces. 2× hackathon winner with a founder-first execution mindset.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="reveal flex flex-wrap items-center gap-3 pt-1">
+        <button onclick="copyEmail(this)"
+                class="email-btn relative inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-zinc-700/60 bg-zinc-900 text-sm text-zinc-200 font-medium hover:border-indigo-500/40 hover:text-white transition-all active:scale-[0.97]">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>rohanpradhann11@gmail.com</span>
+        </button>
+        <a href="https://github.com/xinyuki-sen" target="_blank" rel="noreferrer"
+           class="hoverable inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-zinc-800 text-sm text-zinc-400 hover:text-white hover:border-zinc-600 transition-all active:scale-[0.97]">
+          <i data-lucide="github" class="w-3.5 h-3.5"></i>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/xinyuki" target="_blank" rel="noreferrer"
+           class="hoverable inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-zinc-800 text-sm text-zinc-400 hover:text-white hover:border-zinc-600 transition-all active:scale-[0.97]">
+          <i data-lucide="linkedin" class="w-3.5 h-3.5"></i>
+          LinkedIn
+        </a>
+      </div>
+    </header>
+
+    <!-- Divider -->
+    <div class="shimmer-line reveal"></div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- 2. SELECTED WORK                    -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="space-y-10">
+      <div class="reveal flex items-baseline justify-between">
+        <h2 class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">Selected Work</h2>
+        <span class="text-xs font-mono text-zinc-700">04 projects</span>
+      </div>
+
+      <div class="space-y-2 stagger">
+
+        <!-- Code Atlas -->
+        <a href="https://github.com/yeshrpg/CodeAtlas" target="_blank" rel="noreferrer"
+           class="hoverable project-row reveal block -mx-4 px-4 py-5 rounded-xl group">
+          <div class="flex items-start justify-between gap-6">
+            <div class="space-y-2 flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-medium text-zinc-100 group-hover:text-white">Code Atlas</h3>
+                <i data-lucide="arrow-up-right" class="arrow-icon w-4 h-4 text-indigo-400"></i>
+              </div>
+              <p class="text-sm text-zinc-500 leading-relaxed">
+                Deterministic codebase cartography engine. Parses multi-file repos into interactive dependency graphs using static AST analysis — zero hallucinations, one Gemini call.
+              </p>
+            </div>
+            <div class="flex-shrink-0 flex flex-wrap gap-1.5 pt-0.5">
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">Python</span>
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">FastAPI</span>
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">Gemini</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Chrono -->
+        <a href="https://github.com/xinyuki-sen/Chrono" target="_blank" rel="noreferrer"
+           class="hoverable project-row reveal block -mx-4 px-4 py-5 rounded-xl group">
+          <div class="flex items-start justify-between gap-6">
+            <div class="space-y-2 flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-medium text-zinc-100 group-hover:text-white">Chrono</h3>
+                <i data-lucide="arrow-up-right" class="arrow-icon w-4 h-4 text-indigo-400"></i>
+              </div>
+              <p class="text-sm text-zinc-500 leading-relaxed">
+                Autonomous frontier AI research radar. Tracks 17+ feeds with SHA-256 deduplication and scheduled cron synthesis — zero hosting cost.
+              </p>
+            </div>
+            <div class="flex-shrink-0 flex flex-wrap gap-1.5 pt-0.5">
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">Python</span>
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">Serverless</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- HostelMart -->
+        <a href="https://github.com/xinyuki-sen/hostelmart" target="_blank" rel="noreferrer"
+           class="hoverable project-row reveal block -mx-4 px-4 py-5 rounded-xl group">
+          <div class="flex items-start justify-between gap-6">
+            <div class="space-y-2 flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-medium text-zinc-100 group-hover:text-white">HostelMart</h3>
+                <i data-lucide="arrow-up-right" class="arrow-icon w-4 h-4 text-indigo-400"></i>
+              </div>
+              <p class="text-sm text-zinc-500 leading-relaxed">
+                Hyper-local campus corridor marketplace. Instant WhatsApp handoffs with client-side canvas compression to eliminate server storage overhead.
+              </p>
+            </div>
+            <div class="flex-shrink-0 flex flex-wrap gap-1.5 pt-0.5">
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">Next.js 15</span>
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">Supabase</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- AEGIS-X -->
+        <div class="hoverable project-row reveal block -mx-4 px-4 py-5 rounded-xl group">
+          <div class="flex items-start justify-between gap-6">
+            <div class="space-y-2 flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-medium text-zinc-100 group-hover:text-white">AEGIS-X</h3>
+              </div>
+              <p class="text-sm text-zinc-500 leading-relaxed">
+                Closed-loop hardware protection layer. 4-state predictive machine preventing thermal and battery failure in extreme-altitude sensors, validated against NASA POWER satellite data.
+              </p>
+            </div>
+            <div class="flex-shrink-0 flex flex-wrap gap-1.5 pt-0.5">
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">C/C++</span>
+              <span class="tech-tag text-[10px] font-mono px-2 py-0.5 rounded-md border border-zinc-800 text-zinc-500">ESP32</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="shimmer-line reveal"></div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- 3. RECOGNITION                      -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="space-y-8 stagger">
+      <div class="reveal flex items-baseline justify-between">
+        <h2 class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">Recognition</h2>
+      </div>
+
+      <div class="reveal space-y-5">
+        <div class="flex items-baseline justify-between group">
+          <span class="text-sm text-zinc-300">2× Inter-College Hackathon Winner</span>
+          <span class="text-xs font-mono text-zinc-700 group-hover:text-zinc-500 transition">2026</span>
+        </div>
+        <div class="flex items-baseline justify-between group">
+          <span class="text-sm text-zinc-300">Smart India Hackathon — Internal Selection</span>
+          <span class="text-xs font-mono text-zinc-700 group-hover:text-zinc-500 transition">2026</span>
+        </div>
+        <div class="flex items-baseline justify-between group">
+          <span class="text-sm text-zinc-300">SOET Ambassador, CMR University</span>
+          <span class="text-xs font-mono text-zinc-700 group-hover:text-zinc-500 transition">2025 – now</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- 4. FOOTER                           -->
+    <!-- ═══════════════════════════════════ -->
+    <footer class="reveal pt-16 border-t border-zinc-800/60 flex items-center justify-between text-xs font-mono text-zinc-600">
+      <div class="flex items-center gap-5">
+        <a href="https://github.com/xinyuki-sen" target="_blank" rel="noreferrer" class="hoverable hover:text-zinc-200 transition">GitHub</a>
+        <a href="https://www.linkedin.com/in/xinyuki" target="_blank" rel="noreferrer" class="hoverable hover:text-zinc-200 transition">LinkedIn</a>
+        <a href="mailto:rohanpradhann11@gmail.com" class="hoverable hover:text-zinc-200 transition">Email</a>
+      </div>
+      <span class="text-zinc-700">Bengaluru, IN</span>
+    </footer>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ── Custom Cursor ──
+    const cursor = document.getElementById('cursor');
+    const glow = document.getElementById('cursor-glow');
+    let mx = 0, my = 0, cx = 0, cy = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+    });
+
+    (function animateCursor() {
+      // Smooth lag for the glow, snappy for the dot
+      cx += (mx - cx) * 0.12;
+      cy += (my - cy) * 0.12;
+
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+      glow.style.left = cx + 'px';
+      glow.style.top = cy + 'px';
+
+      requestAnimationFrame(animateCursor);
+    })();
+
+    // Expand cursor on hoverable elements
+    document.querySelectorAll('a, button, .hoverable').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+    });
+
+    // ── Scroll Reveal ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Name Scramble on Hover ──
+    const nameEl = document.getElementById('scramble-name');
+    const originalName = nameEl.getAttribute('data-value');
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&';
+    let scrambleInterval = null;
+
+    nameEl.addEventListener('mouseenter', () => {
+      let iteration = 0;
+      clearInterval(scrambleInterval);
+      scrambleInterval = setInterval(() => {
+        nameEl.innerText = originalName
+          .split('')
+          .map((letter, i) => {
+            if (letter === ' ') return ' ';
+            if (i < iteration) return originalName[i];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join('');
+
+        if (iteration >= originalName.length) {
+          clearInterval(scrambleInterval);
+        }
+        iteration += 1 / 2;
+      }, 30);
+    });
+
+    nameEl.addEventListener('mouseleave', () => {
+      clearInterval(scrambleInterval);
+      nameEl.innerText = originalName;
+    });
+
+    // ── Copy Email ──
+    function copyEmail(btn) {
+      navigator.clipboard.writeText('rohanpradhann11@gmail.com');
+      const span = btn.querySelector('span');
+      const icon = btn.querySelector('[data-lucide]');
+      const original = span.innerText;
+      span.innerText = 'copied to clipboard ✓';
+      btn.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+      btn.style.color = '#6EE7B7';
+      setTimeout(() => {
+        span.innerText = original;
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
